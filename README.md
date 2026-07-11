@@ -2,30 +2,30 @@
 
 Public marketing website for [VESPERA](https://vespera-runtime.vercel.app/).
 
-This repository hosts the **Public Product Story** — landing page and Vercel deployment configuration only.
+This repository hosts the **Public Product Story** — landing page and Vercel deployment only.
 
-## Engineering source of truth
+## What belongs here
 
-All Core code, architecture documentation, ADRs, protocol specifications, and implementation status live in the Core repository:
+- Product vision and user-facing value
+- High-level principles and product boundary
+- Visual introduction
 
-**https://github.com/sapgun/vespera**
+## What does not belong here
 
-Do not treat this repository as authoritative for:
+- Implementation architecture or orchestration internals
+- Build plans, phase gates, or protocol contracts
+- Links to private engineering repositories
+- Fake CLI commands or unshipped product surfaces
 
-- Python Core implementation
-- Phase plans or build gates
-- JSON protocol contracts
-- ADRs or security model
+Engineering source of truth lives in the private `sapgun/vespera` repository.
 
 ## Contents
 
 | File | Purpose |
 |------|---------|
-| `index.html` | Public landing page (inline CSS/JS) |
+| `index.html` | Public landing page |
 | `vercel.json` | Static site deployment config |
 
 ## Deploy
 
-Deployed via [Vercel](https://vercel.com/). Production URL:
-
-**https://vespera-runtime.vercel.app/**
+Production: **https://vespera-runtime.vercel.app/**
