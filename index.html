@@ -7,135 +7,1073 @@
   <meta name="description" content="VESPERA helps you keep projects continuous, recover AI outputs, and retain human authority over consequential actions — local-first, user-owned." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet" />
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg: #0d1117;
-      --bg-elevated: #161d27;
-      --text: #e8edf5;
-      --muted: #8b98a8;
-      --accent: #4a7fd4;
-      --border: rgba(255,255,255,0.08);
+      --bg:           #0D1117;
+      --bg-1:         #111820;
+      --bg-2:         #161d27;
+      --border:       rgba(255,255,255,0.07);
+      --border-s:     #1e2a38;
+      --text:         #E8EDF5;
+      --text-2:       #8b98a8;
+      --text-3:       #3d4f63;
+      --accent:       #4A7FD4;
+      --accent-2:     #6b9be0;
+      --accent-g:     rgba(74,127,212,0.16);
+      --purple:       #7C3AED;
+      --purple-g:     rgba(124,58,237,0.14);
+      --green:        #10b981;
+      --amber:        #f59e0b;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.65;
+      font-family: 'Space Grotesk', sans-serif;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
-    h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; line-height: 1.2; }
-    a { color: var(--accent); }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border-s); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    /* ── STAR CANVAS ── */
+    #stars {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1; pointer-events: none;
+    }
+
+    /* ── NAV ── */
     nav {
+      position: sticky; top: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(1.5rem, 5vw, 4rem); height: 64px;
+      background: rgba(13,17,23,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-size: 1.2rem; font-weight: 700; letter-spacing: 0.16em;
+      color: var(--text); text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      color: var(--text-2); font-size: 0.875rem; font-weight: 500;
+      text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--accent); color: #fff;
+      padding: 0.45rem 1.1rem; border-radius: 6px;
+      font-size: 0.8125rem; font-weight: 600; text-decoration: none;
+      display: flex; align-items: center; gap: 0.4rem;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+    @media (max-width: 768px) { .nav-links { display: none; } }
+
+    /* ── MARQUEE ── */
+    .marquee-bar {
+      overflow: hidden; position: relative; z-index: 1;
+      background: var(--bg-1); border-bottom: 1px solid var(--border);
+      padding: 0.6rem 0;
+    }
+    .marquee-track {
+      display: flex; width: max-content;
+      animation: marquee 28s linear infinite;
+    }
+    .marquee-bar:hover .marquee-track { animation-play-state: paused; }
+    .marquee-item {
+      display: flex; align-items: center; gap: 1.5rem;
+      padding: 0 2rem; white-space: nowrap;
+      font-size: 0.72rem; font-weight: 500; color: var(--text-2);
+      letter-spacing: 0.04em;
+    }
+    .marquee-item b { color: var(--accent); font-weight: 700; }
+    .m-dot { color: var(--border-s); }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ── SHARED LAYOUT ── */
+    section { padding: clamp(4.5rem,10vw,7.5rem) clamp(1.5rem,5vw,4rem); position: relative; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      display: inline-block; font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1rem;
+    }
+    h2 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700; line-height: 1.15; margin-bottom: 1.25rem;
+    }
+    .lead {
+      font-size: 1.0625rem; color: var(--text-2);
+      max-width: 580px; margin-bottom: 3rem; line-height: 1.8;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0; transform: translateY(36px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .d1 { transition-delay: 0.1s; }
+    .d2 { transition-delay: 0.2s; }
+    .d3 { transition-delay: 0.3s; }
+    .d4 { transition-delay: 0.4s; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: calc(100vh - 101px);
+      display: flex; align-items: center; overflow: hidden;
+    }
+    .orb {
+      position: absolute; border-radius: 50%;
+      pointer-events: none; z-index: 0;
+    }
+    .orb-blue {
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(74,127,212,0.22) 0%, transparent 65%);
+      top: -250px; right: -150px; filter: blur(1px);
+      animation: orb1 22s ease-in-out infinite;
+    }
+    .orb-purple {
+      width: 550px; height: 550px;
+      background: radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 65%);
+      bottom: -200px; left: -100px; filter: blur(1px);
+      animation: orb2 28s ease-in-out infinite;
+    }
+    @keyframes orb1 { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(-70px,50px) scale(1.06)} 70%{transform:translate(40px,-40px) scale(0.94)} }
+    @keyframes orb2 { 0%,100%{transform:translate(0,0) scale(1)} 35%{transform:translate(60px,-70px) scale(1.09)} 70%{transform:translate(-40px,40px) scale(0.96)} }
+
+    .hero-inner {
+      position: relative; z-index: 1; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: center;
+    }
+    @media (max-width: 900px) { .hero-inner { grid-template-columns: 1fr; } }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: rgba(74,127,212,0.09); border: 1px solid rgba(74,127,212,0.35);
+      color: var(--accent-2); font-size: 0.8rem; font-weight: 500;
+      padding: 0.4rem 1rem; border-radius: 999px; margin-bottom: 1.5rem;
+      box-shadow: 0 0 24px rgba(74,127,212,0.12);
+    }
+    .bdot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: bdotpulse 2s ease-in-out infinite;
+    }
+    @keyframes bdotpulse { 0%,100%{box-shadow:0 0 8px var(--accent)} 50%{box-shadow:0 0 18px var(--accent),0 0 30px rgba(74,127,212,0.35)} }
+
+    h1 {
+      font-size: clamp(2.25rem, 5.5vw, 3.75rem);
+      font-weight: 700; line-height: 1.08;
+      letter-spacing: -0.025em; margin-bottom: 1.5rem;
+    }
+    h1 .w {
+      display: inline-block;
+      opacity: 0; transform: translateY(22px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    h1 .w.accent { color: var(--accent); }
+    h1.go .w { opacity: 1; transform: translateY(0); }
+
+    .hero-desc {
+      font-family: 'Inter', sans-serif; font-size: 1.0625rem;
+      color: var(--text-2); max-width: 460px; margin-bottom: 2.5rem; line-height: 1.8;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+
+    .btn-primary {
+      background: var(--accent); color: #fff;
+      padding: 0.75rem 1.75rem; border-radius: 8px;
+      font-size: 0.9375rem; font-weight: 600; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      position: relative; overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.2s;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.22) 50%, transparent 60%);
+      transform: translateX(-100%);
+      transition: transform 0.55s ease;
+    }
+    .btn-primary:hover::after { transform: translateX(100%); }
+    .btn-primary:hover { transform: scale(1.025) translateY(-1px); box-shadow: 0 10px 28px rgba(74,127,212,0.38); }
+
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      padding: 0.75rem 1.75rem; border-radius: 8px;
+      border: 1px solid var(--border-s);
+      font-size: 0.9375rem; font-weight: 500; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .btn-ghost:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+    .hero-trust { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .trust-item {
+      font-size: 0.78rem; color: var(--text-3);
+      display: flex; align-items: center; gap: 0.35rem; font-weight: 500;
+    }
+    .trust-item::before { content: '✓'; color: var(--green); }
+
+    /* Mock window */
+    .hero-visual { position: relative; }
+    .mock-window {
+      background: rgba(17,24,32,0.75);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px; overflow: hidden;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.55),
+                  0 0 0 1px rgba(74,127,212,0.08),
+                  0 0 70px rgba(74,127,212,0.05);
+    }
+    .mock-bar {
+      display: flex; align-items: center; gap: 6px;
+      padding: 11px 16px;
+      background: rgba(22,29,39,0.9); border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .md { width: 10px; height: 10px; border-radius: 50%; }
+    .md:nth-child(1){background:#ff5f56} .md:nth-child(2){background:#ffbd2e} .md:nth-child(3){background:#27c93f}
+    .mock-bar-title {
+      margin: 0 auto; font-size: 0.72rem; color: var(--text-3);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .mock-body {
+      padding: 1.25rem 1.5rem; min-height: 220px;
+      background: linear-gradient(180deg, rgba(10,14,20,0.9) 0%, rgba(13,17,23,0.95) 100%);
+    }
+    .mt { font-family: 'JetBrains Mono', monospace; font-size: 0.775rem; line-height: 1.9; }
+    .mp  { color: #f78c6c; }
+    .mc  { color: var(--text); }
+    .ms  { color: #c3e88d; }
+    .mk  { color: #89ddff; }
+    .mok { color: var(--green); }
+    .md2 { color: var(--text-3); }
+    .ma  { color: var(--accent-2); }
+    .mb  { color: var(--purple); opacity: 0.85; }
+    .mcur{ display:inline-block;width:2px;height:13px;background:var(--accent);vertical-align:middle;animation:cur 1s step-end infinite; }
+    @keyframes cur { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── PROBLEM ── */
+    #problem { background: var(--bg-1); }
+    #problem::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:80px;
+      background: linear-gradient(180deg, var(--bg), transparent);
+      pointer-events: none;
+    }
+    .pain-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .pain-card {
+      background: rgba(17,24,32,0.55);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px; padding: 2rem;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+    .pain-card:hover {
+      border-color: rgba(74,127,212,0.45);
+      box-shadow: 0 0 32px rgba(74,127,212,0.1), 0 10px 36px rgba(0,0,0,0.3);
+      transform: translateY(-5px);
+    }
+    .pain-num {
+      font-size: 4rem; font-weight: 800; line-height: 1;
+      color: rgba(74,127,212,0.12); letter-spacing: -0.03em;
+      margin-bottom: 1rem; font-family: 'Space Grotesk', sans-serif;
+    }
+    .pain-card h3 { font-size: 1.0625rem; font-weight: 600; margin-bottom: 0.625rem; }
+    .pain-card p  { font-size: 0.9rem; color: var(--text-2); line-height: 1.75; font-family: 'Inter', sans-serif; }
+
+    /* ── SOLUTION ── */
+    #solution::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:80px;
+      background: linear-gradient(180deg, var(--bg-1), transparent);
+      pointer-events: none;
+    }
+    .solution-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;
+    }
+    @media (max-width: 640px) { .solution-grid { grid-template-columns: 1fr; } }
+    .feat-card {
+      background: var(--bg-1); border: 1px solid var(--border-s);
+      border-radius: 14px; padding: 2rem; position: relative; overflow: hidden;
+      transition: border-color 0.25s, box-shadow 0.28s, transform 0.28s;
+    }
+    .feat-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    }
+    .feat-card:nth-child(1)::before { background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+    .feat-card:nth-child(2)::before { background: linear-gradient(90deg, var(--purple), #a855f7); }
+    .feat-card:nth-child(3)::before { background: linear-gradient(90deg, var(--green), #34d399); }
+    .feat-card:nth-child(4)::before { background: linear-gradient(90deg, var(--amber), #fbbf24); }
+    .feat-card:hover {
+      border-color: rgba(74,127,212,0.5); transform: translateY(-6px);
+      box-shadow: 0 18px 44px rgba(74,127,212,0.1);
+    }
+    .feat-num {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-3);
+      font-family: 'JetBrains Mono', monospace; margin-bottom: 1rem;
+    }
+    .feat-card h3 { font-size: 1.0625rem; font-weight: 600; margin-bottom: 0.6rem; }
+    .feat-card p  { font-size: 0.9rem; color: var(--text-2); line-height: 1.75; font-family: 'Inter', sans-serif; }
+    .feat-tag {
+      display: inline-block; margin-top: 1.25rem;
+      background: rgba(74,127,212,0.07); border: 1px solid rgba(74,127,212,0.2);
+      color: var(--accent-2); font-size: 0.7rem; font-weight: 500;
+      padding: 0.25rem 0.75rem; border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── ARCHITECTURE ── */
+    #architecture { background: var(--bg-1); text-align: center; }
+    #architecture::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:80px;
+      background: linear-gradient(180deg, var(--bg), transparent);
+      pointer-events: none;
+    }
+    .arch-subtitle { color: var(--text-2); font-size: 1rem; margin-bottom: 3.5rem; font-family: 'Inter', sans-serif; }
+    .arch-wrap { max-width: 820px; margin: 0 auto; overflow: visible; }
+    .arch-wrap svg { width: 100%; height: auto; overflow: visible; }
+
+    /* SVG node styles */
+    .n-user rect  { fill: rgba(16,185,129,0.07); stroke: rgba(16,185,129,0.4); stroke-width: 1.5; }
+    .n-user text  { fill: var(--green); font-family:'Space Grotesk',sans-serif; font-size:13px; font-weight:700; letter-spacing:0.06em; }
+    .n-core rect  { fill: rgba(74,127,212,0.1); stroke: var(--accent); stroke-width: 1.5; filter: drop-shadow(0 0 14px rgba(74,127,212,0.28)); }
+    .n-core .ct   { fill: var(--text); font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:700; }
+    .n-core .cs   { fill: var(--text-2); font-family:'Inter',sans-serif; font-size:11px; font-weight:400; }
+    .n-tool rect  { fill: var(--bg-2); stroke: var(--border-s); stroke-width: 1; }
+    .n-tool text  { fill: var(--text-2); font-family:'Space Grotesk',sans-serif; font-size:11px; font-weight:500; }
+    .arch-line {
+      fill: none; stroke: rgba(74,127,212,0.3); stroke-width: 1.5;
+      stroke-dasharray: 1; stroke-dashoffset: 1;
+      transition: stroke-dashoffset 0.9s cubic-bezier(.4,0,.2,1);
+    }
+    .arch-line.drawn { stroke-dashoffset: 0; }
+    .arch-bottom-label { fill: var(--text-3); font-family:'JetBrains Mono',monospace; font-size:11px; }
+
+    /* ── QUICK START ── */
+    #quickstart::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:80px;
+      background: linear-gradient(180deg, var(--bg-1), transparent);
+      pointer-events: none;
+    }
+    .tabs-nav {
+      display: flex; gap: 0;
+      background: var(--bg-1); border: 1px solid var(--border-s);
+      border-radius: 10px; padding: 4px; width: fit-content;
+      margin-bottom: 2.5rem;
+    }
+    .tab-btn {
+      background: none; border: none; color: var(--text-2);
+      padding: 0.5rem 1.25rem; border-radius: 7px;
+      font-size: 0.875rem; font-weight: 500; cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .tab-btn.active { background: var(--accent); color: #fff; }
+    .tab-btn:not(.active):hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .steps { display: flex; flex-direction: column; gap: 1.5rem; max-width: 740px; }
+    .step  { display: flex; gap: 1.5rem; align-items: flex-start; }
+    .step-con { display: flex; flex-direction: column; align-items: center; }
+    .step-n {
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(74,127,212,0.09); border: 1px solid rgba(74,127,212,0.4);
+      color: var(--accent); font-weight: 700; font-size: 0.875rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-ln { width: 1px; flex: 1; min-height: 18px; margin-top: 4px;
+      background: linear-gradient(180deg, rgba(74,127,212,0.3), transparent); }
+    .step-body { flex: 1; padding-bottom: 0.5rem; }
+    .step-body h3 { font-size: 0.9375rem; font-weight: 600; margin-bottom: 0.75rem; }
+
+    .code-blk { background: #080c12; border: 1px solid var(--border-s); border-radius: 10px; overflow: hidden; }
+    .code-hdr {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; background: rgba(13,17,23,0.9); backdrop-filter: blur(12px);
+      padding: 0.55rem 1rem; background: var(--bg-2); border-bottom: 1px solid var(--border-s);
     }
-    .logo { font-weight: 700; letter-spacing: 0.12em; color: var(--text); text-decoration: none; }
-    .logo span { color: var(--accent); }
-    .badge { font-size: 0.75rem; color: var(--muted); }
-    main { max-width: 52rem; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
-    .eyebrow { font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
-    h1 { font-size: clamp(2rem, 5vw, 2.75rem); margin-bottom: 1rem; }
-    .lead { font-size: 1.125rem; color: var(--muted); margin-bottom: 2rem; max-width: 40rem; }
-    section { margin-top: 3rem; }
-    h2 { font-size: 1.5rem; margin-bottom: 0.75rem; }
-    p, li { color: var(--muted); }
-    ul { margin: 0.75rem 0 0 1.25rem; }
-    li { margin-bottom: 0.5rem; }
-    .card {
-      background: var(--bg-elevated); border: 1px solid var(--border);
-      border-radius: 12px; padding: 1.25rem 1.5rem; margin-top: 1rem;
+    .code-lang { font-size: 0.68rem; font-weight: 700; color: var(--text-3);
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.06em; text-transform: uppercase; }
+    .copy-btn {
+      font-size: 0.68rem; color: var(--text-2); cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border-s);
+      padding: 0.2rem 0.6rem; border-radius: 4px;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
-    .loop {
-      font-family: 'Space Grotesk', monospace; font-size: 0.9rem;
-      color: var(--text); white-space: pre-line; margin-top: 0.75rem;
+    .copy-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .copy-btn.ok { background: var(--green); color: #fff; border-color: var(--green); }
+    pre { padding: 1.25rem 1.5rem; overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; line-height: 1.85; }
+    code { color: var(--text); }
+    .ck { color: #89ddff; }
+    .cs { color: #c3e88d; }
+    .cc { color: #546e7a; font-style: italic; }
+    .cf { color: #82aaff; }
+    .cp { color: #f78c6c; }
+    .co { color: var(--green); }
+    .cd { color: #546e7a; }
+
+    /* ── PHILOSOPHY ── */
+    #philosophy {
+      min-height: 85vh; display: flex; align-items: center;
+      text-align: center; overflow: hidden;
     }
-    .principles { display: grid; gap: 0.75rem; margin-top: 1rem; }
-    .principle { padding: 1rem 1.25rem; border: 1px solid var(--border); border-radius: 10px; }
-    .principle strong { display: block; color: var(--text); margin-bottom: 0.25rem; }
+    .phil-inner { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
+    .phil-big {
+      font-size: clamp(2.75rem, 8.5vw, 6rem);
+      font-weight: 700; line-height: 1.05; letter-spacing: -0.025em;
+      color: var(--text); margin-bottom: 2rem;
+    }
+    .phil-big em { font-style: normal; color: var(--accent); }
+    .phil-sub {
+      font-size: clamp(1rem, 2.5vw, 1.375rem); color: var(--text-2);
+      font-family: 'Inter', sans-serif; font-weight: 400; line-height: 1.7;
+    }
+
+    /* ── FOOTER ── */
     footer {
-      margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
-      font-size: 0.875rem; color: var(--muted);
+      background: var(--bg-1); border-top: 1px solid var(--border-s);
+      padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem);
+      position: relative; z-index: 1;
+    }
+    .footer-grid {
+      max-width: 1100px; margin: 0 auto 3rem;
+      display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3.5rem;
+    }
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
+    .f-logo { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.16em; margin-bottom: 0.75rem; }
+    .f-logo span { color: var(--accent); }
+    .f-desc { font-size: 0.875rem; color: var(--text-2); line-height: 1.8; margin-bottom: 1.25rem; font-family: 'Inter', sans-serif; }
+    .f-built { font-size: 0.75rem; color: var(--text-3); }
+    .footer-col h4 {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-3); margin-bottom: 1.25rem;
+    }
+    .f-links { display: flex; flex-direction: column; gap: 0.75rem; }
+    .f-links a {
+      font-size: 0.875rem; color: var(--text-2); text-decoration: none;
+      display: flex; align-items: center; gap: 0.5rem; width: fit-content;
+      transition: color 0.2s;
+    }
+    .f-links a:hover { color: var(--text); }
+    .f-btns { display: flex; flex-direction: column; gap: 0.625rem; margin-top: 1.25rem; }
+    .btn-gh {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border-s);
+      color: var(--text); padding: 0.5rem 1rem; border-radius: 6px;
+      font-size: 0.8rem; font-weight: 600; text-decoration: none;
+      transition: background 0.2s; width: fit-content; font-family: 'Space Grotesk', sans-serif;
+    }
+    .btn-gh:hover { background: rgba(255,255,255,0.1); }
+    .btn-kofi {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(255,94,25,0.09); border: 1px solid rgba(255,94,25,0.3);
+      color: #ff7040; padding: 0.5rem 1rem; border-radius: 6px;
+      font-size: 0.8rem; font-weight: 600; text-decoration: none;
+      transition: background 0.2s; width: fit-content; font-family: 'Space Grotesk', sans-serif;
+    }
+    .btn-kofi:hover { background: rgba(255,94,25,0.16); }
+    .eth-box {
+      background: var(--bg); border: 1px solid var(--border-s);
+      border-radius: 8px; padding: 0.875rem 1rem;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+      color: var(--text-2); word-break: break-all; line-height: 1.7;
+      cursor: pointer; transition: border-color 0.2s;
+      user-select: none;
+    }
+    .eth-box:hover { border-color: rgba(74,127,212,0.4); }
+    .eth-lbl { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 0.375rem; }
+    .eth-hint { font-size: 0.64rem; color: var(--text-3); display: block; margin-top: 0.375rem; transition: color 0.2s; }
+    .footer-bot {
+      max-width: 1100px; margin: 0 auto;
+      padding-top: 1.5rem; border-top: 1px solid var(--border-s);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-bot p { font-size: 0.78rem; color: var(--text-3); }
+    .footer-bot a { color: var(--text-2); text-decoration: none; }
+    .footer-bot a:hover { color: var(--accent); }
+
+    /* ── HOW IT WORKS ── */
+    #howworks { background: var(--bg); text-align: center; }
+    #howworks::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:80px;
+      background: linear-gradient(180deg, var(--bg-1), transparent);
+      pointer-events: none;
+    }
+    .hw-inner { max-width: 720px; margin: 0 auto; }
+    .hw-narrative {
+      font-size: clamp(1.2rem, 2.8vw, 1.75rem);
+      font-weight: 500; line-height: 1.75;
+      color: var(--text-2); font-family: 'Inter', sans-serif;
+    }
+    .hw-narrative .hl   { color: var(--text); font-weight: 600; }
+    .hw-narrative .vn   { color: var(--accent); font-weight: 700; }
+    .hw-line            { display: block; }
+    .hw-break           { display: block; height: 1.25em; }
+
+    /* ── ARCH CTA ── */
+    .arch-cta { text-align: center; margin-top: 2.5rem; }
+
+    /* ── STATUS PREVIEW ── */
+    .status-preview { max-width: 740px; margin-top: 2.5rem; }
+    .status-title {
+      font-size: 0.875rem; font-weight: 600; color: var(--text-2);
+      margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .status-title::before {
+      content: ''; display: inline-block;
+      width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+    }
+
+    /* ── ETH COMING ── */
+    .eth-coming {
+      background: var(--bg); border: 1px solid var(--border-s);
+      border-radius: 8px; padding: 0.875rem 1rem;
+      font-size: 0.8125rem; color: var(--text-2); line-height: 1.7;
+      font-family: 'Inter', sans-serif;
+    }
+    .eth-coming-lbl {
+      font-size: 0.64rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-3);
+      display: block; margin-bottom: 0.5rem;
+    }
+
+    /* ── FOOTER GH STAR ── */
+    .btn-gh-star {
+      display: inline-flex; align-items: center; gap: 0.625rem;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text); padding: 0.875rem 1.75rem; border-radius: 8px;
+      font-size: 1rem; font-weight: 700; text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      font-family: 'Space Grotesk', sans-serif;
+      width: 100%; justify-content: center; max-width: 280px;
+    }
+    .btn-gh-star:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3); transform: translateY(-1px); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      h1 { font-size: 2rem; }
+      .hero-actions { flex-direction: column; }
+      .tabs-nav { width: 100%; }
+      .tab-btn { flex: 1; text-align: center; }
+      .phil-big { font-size: 2.5rem; }
     }
   </style>
 </head>
 <body>
-  <nav>
-    <a class="logo" href="#">VES<span>PERA</span></a>
-    <span class="badge">Pre-v1.0 · Local-first</span>
-  </nav>
 
-  <main>
-    <p class="eyebrow">Vision Enhanced Sovereign Personal Execution &amp; Resource Architecture</p>
-    <h1>Models think. Agents act. You keep continuity and control.</h1>
-    <p class="lead">
-      VESPERA is a local-first AI operations control plane for people working across
-      multiple models, agents, creative tools, and automation systems — without letting
-      any single provider own your project memory.
+<canvas id="stars"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">VES<span>P</span>ERA</a>
+  <div class="nav-links">
+    <a href="#problem">Problem</a>
+    <a href="#solution">Solution</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#loop">Continuity Loop</a>
+    <a href="#status">Status</a>
+  </div>
+  <a href="#status" class="nav-cta">Pre-v1.0 →</a>
+</nav>
+
+<!-- MARQUEE -->
+<div class="marquee-bar" aria-hidden="true">
+  <div class="marquee-track">
+    <div class="marquee-item"><b>Local-first</b><span class="m-dot">·</span>Zero telemetry<span class="m-dot">·</span>User-owned state<span class="m-dot">·</span>Works offline<span class="m-dot">·</span><b>No vendor lock-in</b><span class="m-dot">·</span>Workers not owners<span class="m-dot">·</span><b>Human authority</b><span class="m-dot">·</span>Project continuity<span class="m-dot">·</span></div>
+    <div class="marquee-item"><b>Local-first</b><span class="m-dot">·</span>Zero telemetry<span class="m-dot">·</span>User-owned state<span class="m-dot">·</span>Works offline<span class="m-dot">·</span><b>No vendor lock-in</b><span class="m-dot">·</span>Workers not owners<span class="m-dot">·</span><b>Human authority</b><span class="m-dot">·</span>Project continuity<span class="m-dot">·</span></div>
+  </div>
+</div>
+
+<main>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="orb orb-blue"></div>
+  <div class="orb orb-purple"></div>
+  <div class="container hero-inner">
+    <div>
+      <div class="hero-badge"><div class="bdot"></div>Pre-v1.0 · Local-first control plane</div>
+      <h1>
+        <span class="w" style="--d:0s">Models</span>&nbsp;<span class="w" style="--d:.08s">think.</span>&nbsp;<span class="w accent" style="--d:.16s">Agents</span>&nbsp;<span class="w" style="--d:.24s">act.</span><br />
+        <span class="w" style="--d:.32s">You</span>&nbsp;<span class="w" style="--d:.4s">keep</span>&nbsp;<span class="w accent" style="--d:.48s">continuity</span>&nbsp;<span class="w" style="--d:.56s">and</span>&nbsp;<span class="w" style="--d:.64s">control.</span>
+      </h1>
+      <p class="hero-desc">
+        A local-first AI operations control plane for people working across
+        multiple models, agents, creative tools, and automation — without letting
+        any single provider own your project memory.
+      </p>
+      <div class="hero-actions">
+        <a href="#solution" class="btn-primary">
+          Explore the vision →
+        </a>
+        <a href="#loop" class="btn-ghost">
+          See the continuity loop →
+        </a>
+      </div>
+      <div class="hero-trust">
+        <span class="trust-item">Pre-v1.0</span>
+        <span class="trust-item">Local-first</span>
+        <span class="trust-item">Human authority</span>
+        <span class="trust-item">Windows / Mac / Linux</span>
+      </div>
+    </div>
+
+    <div class="hero-visual reveal">
+      <div class="mock-window">
+        <div class="mock-bar">
+          <div class="md"></div><div class="md"></div><div class="md"></div>
+          <span class="mock-bar-title">vespera — command center</span>
+        </div>
+        <div class="mock-body">
+          <div class="mt">
+            <div><span class="ma">→</span> <span class="cs">projects</span>&nbsp;&nbsp;&nbsp;&nbsp; continuity <span class="cd">restored</span> <span class="co">✔</span></div>
+            <div><span class="ma">→</span> <span class="cs">capture</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; intent queued <span class="co">✔</span></div>
+            <div><span class="ma">→</span> <span class="mb">routing</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; worker selected <span class="co">✔</span></div>
+            <div>&nbsp;</div>
+            <div><span class="co">✔</span>&nbsp; Human authority on consequential actions</div>
+            <div><span class="co">✔</span>&nbsp; Local canonical state · audit trail ready</div>
+            <div><span class="mp">$</span> <span class="mcur"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="howworks">
+  <div class="container hw-inner">
+    <span class="section-label reveal" style="display:block">In practice</span>
+    <div class="hw-narrative">
+      <span class="hw-line reveal d1"><span class="hl">Cursor</span> wrote the plan.</span>
+      <span class="hw-line reveal d2"><span class="hl">Claude</span> reviews it.</span>
+      <span class="hw-line reveal d3">A <span class="hl">local agent</span> runs tests.</span>
+      <span class="hw-break"></span>
+      <span class="hw-line reveal d4"><span class="vn">VESPERA</span> keeps all three working<br />from the same project memory.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROBLEM ── -->
+<section id="problem">
+  <div class="container">
+    <span class="section-label reveal">The Problem</span>
+    <h2 class="reveal">Your AI stack is<br />working against you</h2>
+    <p class="lead reveal">The more AI tools you adopt, the more time you spend managing them — not building. Three patterns are silently killing your productivity.</p>
+    <div class="pain-grid">
+      <div class="pain-card reveal d1">
+        <div class="pain-num">01</div>
+        <h3>Context fragmentation</h3>
+        <p>Each AI tool maintains isolated context. You repeat yourself every session, watch Claude forget what Cursor knows, and lose the thread between tools. Your intent evaporates at every boundary.</p>
+      </div>
+      <div class="pain-card reveal d2">
+        <div class="pain-num">02</div>
+        <h3>Vendor lock-in by design</h3>
+        <p>Every tool wants to be your primary interface — proprietary plugins, closed APIs, pricing cliffs that trap your prompts inside their ecosystem. Switching costs compound until you stop switching.</p>
+      </div>
+      <div class="pain-card reveal d3">
+        <div class="pain-num">03</div>
+        <h3>No composable layer</h3>
+        <p>You have a dozen hammers with no way to connect them. Chaining tools means manual copy-paste or brittle scripts. There's no standard protocol for "tool A does X, then hands off to tool B."</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SOLUTION ── -->
+<section id="solution">
+  <div class="container">
+    <span class="section-label reveal">The Solution</span>
+    <h2 class="reveal">One control plane for<br />continuity and authority</h2>
+    <p class="lead reveal">VESPERA coordinates specialist systems as replaceable workers — keeping project memory, outputs, and consequential decisions under your control.</p>
+    <div class="solution-grid">
+      <div class="feat-card reveal d1">
+        <div class="feat-num">ENABLES · 01</div>
+        <h3>Project continuity</h3>
+        <p>Objectives, decisions, and outputs stay connected across sessions and tools. Return to any project and understand its state before you continue.</p>
+        <span class="feat-tag">restore context</span>
+      </div>
+      <div class="feat-card reveal d2">
+        <div class="feat-num">ENABLES · 02</div>
+        <h3>Worker independence</h3>
+        <p>Models and agents participate as interchangeable workers — not owners of your memory, routing, or final authority.</p>
+        <span class="feat-tag">swap providers</span>
+      </div>
+      <div class="feat-card reveal d3">
+        <div class="feat-num">ENABLES · 03</div>
+        <h3>Human authority</h3>
+        <p>Consequential execution cannot silently bypass you. Important changes flow through explicit control and approval.</p>
+        <span class="feat-tag">governed actions</span>
+      </div>
+      <div class="feat-card reveal d4">
+        <div class="feat-num">ENABLES · 04</div>
+        <h3>Audit &amp; recoverability</h3>
+        <p>Understandable history and restorable local state. Generated artifacts live under your lifecycle, not trapped in a vendor UI.</p>
+        <span class="feat-tag">output recovery</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ARCHITECTURE ── -->
+<section id="architecture">
+  <div class="container">
+    <span class="section-label reveal" style="display:block;text-align:center">Architecture</span>
+    <h2 class="reveal" style="text-align:center">You are the OS</h2>
+    <p class="arch-subtitle reveal">VESPERA sits between you and every AI tool — a thin, transparent orchestration layer you always control.</p>
+
+    <div class="arch-wrap reveal">
+      <svg viewBox="0 0 800 345" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VESPERA Architecture: You → VESPERA Core → Tool Layer">
+
+        <!-- Lines behind nodes -->
+        <path class="arch-line" id="al0" pathLength="1" d="M400,54 C400,88 400,88 400,110"/>
+        <path class="arch-line" id="al1" pathLength="1" d="M400,170 C400,212 85,212 85,252"/>
+        <path class="arch-line" id="al2" pathLength="1" d="M400,170 C400,212 240,212 240,252"/>
+        <path class="arch-line" id="al3" pathLength="1" d="M400,170 C400,212 400,212 400,252"/>
+        <path class="arch-line" id="al4" pathLength="1" d="M400,170 C400,212 560,212 560,252"/>
+        <path class="arch-line" id="al5" pathLength="1" d="M400,170 C400,212 715,212 715,252"/>
+
+        <!-- YOU -->
+        <g class="n-user">
+          <rect x="300" y="10" width="200" height="44" rx="8"/>
+          <text x="400" y="37" text-anchor="middle">YOU</text>
+        </g>
+
+        <!-- VESPERA CORE -->
+        <g class="n-core">
+          <rect x="235" y="110" width="330" height="60" rx="10"/>
+          <text class="ct" x="400" y="137" text-anchor="middle">VESPERA CORE</text>
+          <text class="cs" x="400" y="157" text-anchor="middle">Continuity · Routing · Governance</text>
+        </g>
+
+        <!-- Tool layer -->
+        <g class="n-tool">
+          <rect x="20"  y="252" width="130" height="40" rx="7"/>
+          <text x="85"  y="277" text-anchor="middle">Shared Memory</text>
+        </g>
+        <g class="n-tool">
+          <rect x="175" y="252" width="130" height="40" rx="7"/>
+          <text x="240" y="277" text-anchor="middle">Claude API</text>
+        </g>
+        <g class="n-tool">
+          <rect x="335" y="252" width="130" height="40" rx="7"/>
+          <text x="400" y="277" text-anchor="middle">Code Agents</text>
+        </g>
+        <g class="n-tool">
+          <rect x="495" y="252" width="130" height="40" rx="7"/>
+          <text x="560" y="277" text-anchor="middle">Local Models</text>
+        </g>
+        <g class="n-tool">
+          <rect x="650" y="252" width="130" height="40" rx="7"/>
+          <text x="715" y="277" text-anchor="middle">Custom Tools</text>
+        </g>
+
+        <text class="arch-bottom-label" x="400" y="332" text-anchor="middle">plug in anything — swap out anything</text>
+      </svg>
+    </div>
+    <div class="arch-cta reveal">
+      <a href="#status" class="btn-ghost">Development status →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTINUITY LOOP ── -->
+<section id="loop">
+  <div class="container">
+    <span class="section-label reveal">Product Goal</span>
+    <h2 class="reveal">The continuity loop<br />behind every project</h2>
+    <p class="lead reveal">Return to any project, understand its state, continue with the right tool, recover important outputs, and retain final authority over consequential actions.</p>
+
+    <div class="tabs-nav reveal">
+      <button class="tab-btn active" data-tab="tab-loop">The loop</button>
+      <button class="tab-btn" data-tab="tab-principles">Principles</button>
+      <button class="tab-btn" data-tab="tab-boundary">Boundary</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-loop">
+      <div class="steps">
+        <div class="step">
+          <div class="step-con"><div class="step-n">1</div><div class="step-ln"></div></div>
+          <div class="step-body">
+            <h3>Capture intent</h3>
+            <div class="code-blk">
+              <div class="code-hdr"><span class="code-lang">flow</span><button class="copy-btn" data-code="Capture intent">Copy</button></div>
+              <pre><code><span class="co">→</span> <span class="cs">Capture intent</span>
+<span class="co">→</span> <span class="cs">restore project context</span>
+<span class="co">→</span> <span class="cs">route the work</span>
+<span class="co">→</span> <span class="cs">collect the result</span>
+<span class="co">→</span> <span class="cs">govern important changes</span>
+<span class="co">→</span> <span class="cs">preserve continuity</span></code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-con"><div class="step-n">2</div><div class="step-ln"></div></div>
+          <div class="step-body">
+            <h3>Restore context before you act</h3>
+            <div class="code-blk">
+              <div class="code-hdr"><span class="code-lang">narrative</span><button class="copy-btn" data-code="Cursor wrote the plan. Claude reviews it. A local agent runs tests. VESPERA keeps all three working from the same project memory.">Copy</button></div>
+              <pre><code><span class="hl" style="color:#e8edf5">Cursor</span> wrote the plan.
+<span class="hl" style="color:#e8edf5">Claude</span> reviews it.
+A <span class="hl" style="color:#e8edf5">local agent</span> runs tests.
+
+<span class="vn" style="color:#6b9be0">VESPERA</span> keeps all three working
+from the same project memory.</code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-con"><div class="step-n">3</div></div>
+          <div class="step-body">
+            <h3>Govern what matters</h3>
+            <div class="code-blk">
+              <div class="code-hdr"><span class="code-lang">policy</span><button class="copy-btn" data-code="Consequential execution cannot silently bypass the user.">Copy</button></div>
+              <pre><code><span class="co">✔</span>  Workers participate — <span class="cs">they do not own memory</span>
+<span class="co">✔</span>  Outputs recoverable — <span class="cs">under your lifecycle</span>
+<span class="co">✔</span>  Authority retained — <span class="cs">explicit control for Level 2+</span></code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-principles">
+      <div class="steps">
+        <div class="step">
+          <div class="step-con"><div class="step-n">1</div><div class="step-ln"></div></div>
+          <div class="step-body"><h3>Local-first by default</h3>
+            <p style="color:var(--text-2);font-family:Inter,sans-serif;font-size:0.9rem;line-height:1.75">Core workflows must not require mandatory cloud infrastructure.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-con"><div class="step-n">2</div><div class="step-ln"></div></div>
+          <div class="step-body"><h3>User-owned canonical state</h3>
+            <p style="color:var(--text-2);font-family:Inter,sans-serif;font-size:0.9rem;line-height:1.75">Important knowledge and assets remain portable and readable.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-con"><div class="step-n">3</div><div class="step-ln"></div></div>
+          <div class="step-body"><h3>Workers, not owners</h3>
+            <p style="color:var(--text-2);font-family:Inter,sans-serif;font-size:0.9rem;line-height:1.75">Models and agents are interchangeable participants in your operations.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-con"><div class="step-n">4</div></div>
+          <div class="step-body"><h3>Human authority</h3>
+            <p style="color:var(--text-2);font-family:Inter,sans-serif;font-size:0.9rem;line-height:1.75">Consequential execution cannot silently bypass the user.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-boundary">
+      <div class="steps">
+        <div class="step">
+          <div class="step-con"><div class="step-n">✓</div><div class="step-ln"></div></div>
+          <div class="step-body"><h3>What VESPERA coordinates</h3>
+            <p style="color:var(--text-2);font-family:Inter,sans-serif;font-size:0.9rem;line-height:1.75">Coding agents, local models, creative pipelines, workflow automation, and knowledge environments — as specialist systems under one control plane.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-con"><div class="step-n">✗</div></div>
+          <div class="step-body"><h3>What VESPERA is not</h3>
+            <p style="color:var(--text-2);font-family:Inter,sans-serif;font-size:0.9rem;line-height:1.75">Not a foundation model, full IDE, payment engine, or universal SaaS platform. Detailed orchestration internals stay outside this public overview.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATUS ── -->
+<section id="status">
+  <div class="container">
+    <span class="section-label reveal">Status</span>
+    <h2 class="reveal">Active pre-v1.0<br />development</h2>
+    <p class="lead reveal">A cross-platform desktop command center with governed local Core, workspace onboarding, project continuity, and task capture. Public engineering details are not published on this site.</p>
+    <div class="status-preview reveal">
+      <div class="status-title">Current focus areas</div>
+      <div class="code-blk">
+        <div class="code-hdr"><span class="code-lang">roadmap</span></div>
+        <pre><code><span class="cd">┌──────────────────────┬────────────────────────────┐</span>
+<span class="cd">│</span> Desktop command center <span class="cd">│</span> <span class="co">✓ In progress</span>            <span class="cd">│</span>
+<span class="cd">│</span> Workspace onboarding   <span class="cd">│</span> <span class="co">✓ In progress</span>            <span class="cd">│</span>
+<span class="cd">│</span> Project continuity     <span class="cd">│</span> <span class="co">✓ In progress</span>            <span class="cd">│</span>
+<span class="cd">│</span> Task capture           <span class="cd">│</span> <span class="co">✓ In progress</span>            <span class="cd">│</span>
+<span class="cd">│</span> Public install / CLI   <span class="cd">│</span> <span class="ck">Not shipped yet</span>          <span class="cd">│</span>
+<span class="cd">└──────────────────────┴────────────────────────────┘</span></code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PHILOSOPHY ── -->
+<section id="philosophy">
+  <div class="container phil-inner">
+    <p class="phil-big reveal">
+      AI tools are <em>workers</em>,<br />not <em>owners</em>.
     </p>
+    <p class="phil-sub reveal d1">
+      VESPERA puts the final authority back where it belongs.
+    </p>
+  </div>
+</section>
 
-    <section>
-      <h2>Product goal</h2>
-      <div class="card">
-        <p>Return to any project, understand its state, continue with the right tool, recover important outputs, and retain final authority over consequential actions.</p>
-        <div class="loop">Capture intent
-→ restore project context
-→ route the work
-→ collect the result
-→ govern important changes
-→ preserve continuity</div>
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="f-logo">VES<span>P</span>ERA</div>
+      <p class="f-desc">A local-first AI operations control plane for project continuity, output recovery, and human authority over consequential actions.</p>
+      <span class="f-built">Public product story only · Engineering source is private</span>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <div class="f-links">
+        <a href="#problem">The problem</a>
+        <a href="#solution">What it enables</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#loop">Continuity loop</a>
+        <a href="#status">Development status</a>
       </div>
-    </section>
-
-    <section>
-      <h2>What VESPERA enables</h2>
-      <ul>
-        <li><strong style="color:var(--text)">Project continuity</strong> — objectives, decisions, and outputs stay connected</li>
-        <li><strong style="color:var(--text)">Worker independence</strong> — AI systems as replaceable workers, not owners</li>
-        <li><strong style="color:var(--text)">Output recovery</strong> — generated artifacts under your lifecycle</li>
-        <li><strong style="color:var(--text)">Human authority</strong> — consequential actions require explicit control</li>
-        <li><strong style="color:var(--text)">Audit and recoverability</strong> — understandable history and restorable local state</li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>Principles</h2>
-      <div class="principles">
-        <div class="principle"><strong>Local-first by default</strong><span>Core workflows must not require mandatory cloud infrastructure.</span></div>
-        <div class="principle"><strong>User-owned canonical state</strong><span>Important knowledge and assets remain portable and readable.</span></div>
-        <div class="principle"><strong>Workers, not owners</strong><span>Models and agents are interchangeable participants.</span></div>
-        <div class="principle"><strong>Human authority</strong><span>Consequential execution cannot silently bypass the user.</span></div>
+      <div class="f-btns">
+        <a href="https://ko-fi.com/sapgun" class="btn-kofi" target="_blank" rel="noopener">☕ Buy me a coffee</a>
       </div>
-    </section>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <div class="eth-coming">
+        <span class="eth-coming-lbl">ETH Donations</span>
+        💎 ETH donations — address coming soon
+      </div>
+    </div>
+  </div>
+  <div class="footer-bot">
+    <p>© 2026 VESPERA · Public product story only</p>
+    <p>Local-first. No telemetry by default. The evening star of your AI sovereignty.</p>
+  </div>
+</footer>
 
-    <section>
-      <h2>Product boundary</h2>
-      <p>
-        VESPERA coordinates specialist systems — coding agents, local models, creative pipelines,
-        workflow automation, and knowledge environments. It is not a foundation model, full IDE,
-        payment engine, or universal SaaS platform.
-      </p>
-      <p style="margin-top:0.75rem">
-        Detailed orchestration, policy internals, and advanced routing intelligence are intentionally
-        outside this public overview.
-      </p>
-    </section>
+<script>
+/* ─── STARS CANVAS ─── */
+(function(){
+  const c = document.getElementById('stars');
+  const x = c.getContext('2d');
+  let stars = [], W, H;
 
-    <section>
-      <h2>Status</h2>
-      <p>
-        VESPERA is in active pre-v1.0 development: a cross-platform desktop command center with
-        governed local Core, workspace onboarding, project continuity, and task capture.
-        Public engineering details are not published on this site.
-      </p>
-    </section>
+  function resize(){
+    W = c.width  = window.innerWidth;
+    H = c.height = window.innerHeight;
+  }
 
-    <footer>
-      <p>© 2026 VESPERA · Public product story only · Engineering source is private</p>
-      <p style="margin-top:0.5rem">The evening star of your AI sovereignty.</p>
-    </footer>
-  </main>
+  function init(){
+    stars = [];
+    for(let i=0;i<160;i++){
+      stars.push({
+        x: Math.random()*W, y: Math.random()*H,
+        r: Math.random()*1.4+0.2,
+        phase: Math.random()*Math.PI*2,
+        spd: Math.random()*0.006+0.002
+      });
+    }
+  }
+
+  function draw(t){
+    x.clearRect(0,0,W,H);
+    for(const s of stars){
+      const a = 0.15 + Math.sin(t*s.spd+s.phase)*0.22;
+      x.beginPath();
+      x.arc(s.x,s.y,s.r,0,Math.PI*2);
+      x.fillStyle = `rgba(232,237,245,${Math.max(0.03,a)})`;
+      x.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize',()=>{ resize(); init(); });
+  resize(); init();
+  requestAnimationFrame(draw);
+})();
+
+/* ─── HERO STAGGER ─── */
+(function(){
+  const h1 = document.querySelector('h1');
+  if(!h1) return;
+  h1.querySelectorAll('.w').forEach(w=>{
+    w.style.transitionDelay = w.style.getPropertyValue('--d') || '0s';
+  });
+  requestAnimationFrame(()=> requestAnimationFrame(()=> h1.classList.add('go')));
+})();
+
+/* ─── SCROLL REVEAL ─── */
+(function(){
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold:0.1});
+  els.forEach(el=>io.observe(el));
+})();
+
+/* ─── ARCHITECTURE LINES ─── */
+(function(){
+  const lines = document.querySelectorAll('.arch-line');
+  const section = document.getElementById('architecture');
+  if(!section) return;
+  const io = new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting){
+      lines.forEach((l,i)=> setTimeout(()=> l.classList.add('drawn'), i*160));
+      io.disconnect();
+    }
+  }, {threshold:0.25});
+  io.observe(section);
+})();
+
+/* ─── TABS ─── */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const id = btn.dataset.tab;
+    btn.closest('section').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.closest('section').querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  });
+});
+
+/* ─── COPY BUTTONS ─── */
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const txt = btn.dataset.code;
+    navigator.clipboard.writeText(txt).then(()=>{
+      btn.textContent = 'Copied!';
+      btn.classList.add('ok');
+      setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('ok'); }, 2000);
+    }).catch(()=>{ btn.textContent='Error'; setTimeout(()=> btn.textContent='Copy',1500); });
+  });
+});
+
+</script>
 </body>
 </html>
