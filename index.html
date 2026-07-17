@@ -226,6 +226,36 @@
     }
     .btn-ghost:hover { border-color: var(--accent); transform: translateY(-1px); }
 
+    /* Reserved public follow slots — swap href when roadmap/build log pages ship */
+    .btn-slot {
+      background: transparent; color: var(--text-2);
+      padding: 0.75rem 1.5rem; border-radius: 8px;
+      border: 1px dashed var(--border-s);
+      font-size: 0.875rem; font-weight: 500; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .btn-slot:hover { border-color: var(--accent); color: var(--text); transform: translateY(-1px); }
+    .btn-slot--soon {
+      opacity: 0.72; cursor: default; pointer-events: none;
+      border-style: dashed;
+    }
+    .btn-slot--soon:hover { transform: none; border-color: var(--border-s); color: var(--text-2); }
+    .btn-slot .slot-hint {
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-3);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .status-cta-row {
+      display: flex; flex-wrap: wrap; gap: 0.75rem;
+      margin-top: 1.75rem; align-items: center;
+    }
+    .status-cta-note {
+      margin-top: 1rem; font-size: 0.85rem; color: var(--text-3);
+      font-family: 'Inter', sans-serif; line-height: 1.65; max-width: 520px;
+    }
+
     .hero-trust { display: flex; gap: 1.5rem; flex-wrap: wrap; }
     .trust-item {
       font-size: 0.78rem; color: var(--text-3);
@@ -632,7 +662,8 @@
         <a href="#workflows" class="btn-primary">
           See real workflows →
         </a>
-        <a href="#status" class="btn-ghost">
+        <!-- Public follow CTAs: status now; roadmap/build-log hrefs when public pages ship -->
+        <a href="#status" class="btn-ghost" data-cta="status">
           Development status
         </a>
       </div>
@@ -965,10 +996,43 @@ with approval when risk requires it.</code></pre>
 <span class="cd">│</span> Public install / CLI      <span class="cd">│</span> <span class="ck">Not shipped yet</span>          <span class="cd">│</span>
 <span class="cd">└──────────────────────────┴────────────────────────────┘</span></code></pre>
       </div>
-      <p class="lead" style="margin-top:1.5rem;margin-bottom:0;font-size:0.95rem">
-        Want to follow along? Bookmark this page for status, or
-        <a href="https://ko-fi.com/sapgun" target="_blank" rel="noopener" style="color:var(--accent-2)">support early work</a>.
-        Public build logs and installers will land when they are ready to share.
+      <!--
+        Public follow CTA slots (no private engineering repo links).
+        When pages exist, replace:
+          data-cta="roadmap"  href → /roadmap/ or public URL
+          data-cta="buildlog" href → /build/ or public URL, remove btn-slot--soon
+      -->
+      <div class="status-cta-row" aria-label="Follow development">
+        <a href="#workflows" class="btn-primary" data-cta="workflows">
+          See real workflows →
+        </a>
+        <a href="#status" class="btn-ghost" data-cta="status">
+          On this page
+        </a>
+        <a
+          href="#status"
+          class="btn-slot"
+          data-cta="roadmap"
+          title="Public roadmap page — uses this section until a dedicated page ships"
+        >
+          Public roadmap
+        </a>
+        <span
+          class="btn-slot btn-slot--soon"
+          data-cta="buildlog"
+          role="status"
+          aria-label="Public build log coming soon"
+          title="Reserved for a public build log when installers and release notes ship"
+        >
+          Public build log
+          <span class="slot-hint">soon</span>
+        </span>
+      </div>
+      <p class="status-cta-note">
+        Engineering source stays private pre-v1.0. These slots are for public roadmap
+        and build-log pages only — not a private repository link.
+        <a href="https://ko-fi.com/sapgun" target="_blank" rel="noopener" style="color:var(--accent-2)">Support early work</a>
+        if you want to back the build.
       </p>
     </div>
   </div>
@@ -1007,6 +1071,8 @@ with approval when risk requires it.</code></pre>
         <a href="#status">Development status</a>
       </div>
       <div class="f-btns">
+        <a href="#status" class="btn-gh" data-cta="status">Development status</a>
+        <a href="#status" class="btn-gh" data-cta="roadmap" title="Public roadmap — this page until a dedicated URL ships">Public roadmap</a>
         <a href="https://ko-fi.com/sapgun" class="btn-kofi" target="_blank" rel="noopener">☕ Buy me a coffee</a>
       </div>
     </div>
