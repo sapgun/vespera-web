@@ -10,6 +10,7 @@ This repository hosts the **Public Product Story** — landing page and Vercel d
 - **Product clarity:** multi-tool continuity, output recovery, human approval
 - **Concrete workflows:** governed automation (e.g. n8n) and recoverable creative work (e.g. ComfyUI) — as proof points, not product identity
 - **No private-repo CTAs** as primary actions while engineering source stays private
+- **Public follow slots** on Status (`data-cta="roadmap"` / `data-cta="buildlog"`): wire to public pages when they exist; build log stays “soon” until shippable
 
 ## What belongs here
 
